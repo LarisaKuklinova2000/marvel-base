@@ -1,5 +1,3 @@
-import { findRenderedDOMComponentWithClass } from "react-dom/test-utils";
-
 
 class MarvelService {
 
@@ -16,12 +14,26 @@ class MarvelService {
         return await res.json()
     }
 
-    getAllCharacters = () => {
-        return this.getResource(`${this._apiBase}characters?limit=9&apikey=${this._apiKey}`);
+    getAllCharacters = async () => {
+        const result = await this.getResource(`${this._apiBase}characters?limit=9&apikey=${this._apiKey}`);
+        return result.data.results.map(item => this._transformCharacter(item))
     }
 
-    getCharacter = (id) => {
-        return this.getResource(`${this._apiBase}characters/${id}?apikey=${this._apiKey}`);
+    getCharacter = async (id) => {
+        const res = await this.getResource(`${this._apiBase}characters/${id}?apikey=${this._apiKey}`);
+        return this._transformCharacter(res.data.results[0]);
+    }
+
+    _transformCharacter = (char) => {
+        return {
+            name: char.name,
+            description: char.description.length === 0 ? 'description is not found :(':
+                         char.description.length > 180 ? char.description.slice(0, 180) + '...':
+                         char.description,
+            thumbnail: char.thumbnail.path + '.' + char.thumbnail.extension,
+            homepage: char.urls[0].url,
+            wiki: char.urls[1].url
+        }
     }
 }
 
