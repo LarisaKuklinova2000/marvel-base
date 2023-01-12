@@ -9,7 +9,7 @@ const ComicsList = (props) => {
 
     const [comicsList, setComicsList] = useState([]);
     const [newItemLoading, setNewItemLoading] = useState(false);
-    const [offset, setOffset] = useState(315);
+    const [offset, setOffset] = useState(210);
     const [comicsEnded, setComicsEnded] = useState(false);
 
     const {loading, error, getAllComics} = useMarvelService();
@@ -20,7 +20,6 @@ const ComicsList = (props) => {
 
     const onRequest = (offset, initial) => {
         initial? setNewItemLoading(false): setNewItemLoading(true);
-        setNewItemLoading(true)
         getAllComics(offset)
             .then(res => onComicsListLoaded(res))
     }
@@ -32,8 +31,8 @@ const ComicsList = (props) => {
             ended = true;
         }
 
-        setComicsList(charList => [...charList, ...newComicsList]);
-        setNewItemLoading(newItemLoading => false);
+        setComicsList([...comicsList, ...newComicsList]);
+        setNewItemLoading(false);
         setOffset(offset => offset + 12);
         setComicsEnded(charEnded => ended);
     }
@@ -41,7 +40,7 @@ const ComicsList = (props) => {
     const renderComicsItems = (arr) => {
         const items = arr.map((item, i) => {
             return (
-                <li className="comics__item" key={item.id}>
+                <li className="comics__item" key={item.id + i}>
                     <a href="#">
                         <img src={`${item.images[0].path}.${item.images[0].extension}`} alt="ultimate war" className="comics__item-img"/>
                         <div className="comics__item-name">{item.title}</div>
@@ -50,7 +49,11 @@ const ComicsList = (props) => {
                 </li>  
             )
         })
-        return items;
+        return (
+            <ul className="comics__grid">
+                {items}
+            </ul>
+        )
     }
 
     const errorMessage = error ? <ErrorMessage/> : null;
@@ -59,11 +62,9 @@ const ComicsList = (props) => {
 
     return (
         <div className="comics__list">
-            <ul className="comics__grid">
                 {errorMessage}
                 {spinner}
                 {comics}
-            </ul>
             <button 
                 className="button button__main button__long"
                 disabled={newItemLoading}

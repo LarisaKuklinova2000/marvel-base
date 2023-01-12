@@ -9,7 +9,7 @@ const CharList = (props) => {
 
     const [charList, setCharList] = useState([]);
     const [newItemLoading, setNewItemLoading] = useState(false);
-    const [offset, setOffset] = useState(315);
+    const [offset, setOffset] = useState(210);
     const [charEnded, setCharEnded] = useState(false);
 
 
@@ -20,20 +20,18 @@ const CharList = (props) => {
     }, [])
 
     const onRequest = (offset, initial) => {
-        initial? setNewItemLoading(false): setNewItemLoading(true);
-        setNewItemLoading(true)
+        initial ? setNewItemLoading(false) : setNewItemLoading(true);
         getAllCharacters(offset)
-            .then(res => onCharListLoaded(res))
+            .then(onCharListLoaded)
     }
 
     const onCharListLoaded = (newCharList) => {
-
         let ended = false;
         if (newCharList.length < 9) {
             ended = true;
         }
 
-        setCharList(charList => [...charList, ...newCharList]);
+        setCharList([...charList, ...newCharList]);
         setNewItemLoading(newItemLoading => false);
         setOffset(offset => offset + 9);
         setCharEnded(charEnded => ended);
